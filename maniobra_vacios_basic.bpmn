@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1262ky9" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:collaboration id="Collaboration_00z4xj7">
+    <bpmn:participant id="Participant_10vlkaf" name="Agente Aduanal" processRef="request_handling_vacios" />
+    <bpmn:participant id="Participant_0e9if40" name="Patio de vacios" processRef="generate_handling_vacios" />
+    <bpmn:messageFlow id="Flow_1y9681a" sourceRef="Activity_0wyn7fl" targetRef="Event_1wciost" />
+    <bpmn:messageFlow id="Flow_15zgwnz" sourceRef="Activity_02slat0" targetRef="Activity_1unisom" />
+  </bpmn:collaboration>
+  <bpmn:process id="request_handling_vacios" name="Solicitud de Maniobra de vacios" isExecutable="true">
+    <bpmn:sendTask id="Activity_0wyn7fl" name="Enviar solicitud de maniobra">
+      <bpmn:incoming>Flow_1tjvzrb</bpmn:incoming>
+      <bpmn:outgoing>Flow_0dbfkes</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:exclusiveGateway id="Gateway_1yj26ho" name="Maniobra OK?">
+      <bpmn:incoming>Flow_1bpactu</bpmn:incoming>
+      <bpmn:outgoing>Flow_1tjvzrb</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1hts2jx</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Activity_0i99i0u" name="Crear solicitud de maniobra">
+      <bpmn:incoming>Flow_1gz65gh</bpmn:incoming>
+      <bpmn:incoming>Flow_1hts2jx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0h15tf1</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="StartEvent_1" name="Solicitar maniobra de vacío">
+      <bpmn:outgoing>Flow_1gz65gh</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_1qkwntv" name="Validar solicitud de maniobra" camunda:type="external" camunda:topic="validate-handling-vacios">
+      <bpmn:incoming>Flow_0h15tf1</bpmn:incoming>
+      <bpmn:outgoing>Flow_1bpactu</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:receiveTask id="Activity_1unisom" name="Recibe maniobra de vacios">
+      <bpmn:incoming>Flow_0dbfkes</bpmn:incoming>
+      <bpmn:outgoing>Flow_1muxp12</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:endEvent id="Event_0yz9ns6" name="Maiobra recibida">
+      <bpmn:incoming>Flow_1muxp12</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1tjvzrb" name="Si" sourceRef="Gateway_1yj26ho" targetRef="Activity_0wyn7fl" />
+    <bpmn:sequenceFlow id="Flow_1bpactu" sourceRef="Activity_1qkwntv" targetRef="Gateway_1yj26ho" />
+    <bpmn:sequenceFlow id="Flow_1hts2jx" name="No" sourceRef="Gateway_1yj26ho" targetRef="Activity_0i99i0u" />
+    <bpmn:sequenceFlow id="Flow_0h15tf1" sourceRef="Activity_0i99i0u" targetRef="Activity_1qkwntv" />
+    <bpmn:sequenceFlow id="Flow_1gz65gh" sourceRef="StartEvent_1" targetRef="Activity_0i99i0u" />
+    <bpmn:sequenceFlow id="Flow_0dbfkes" sourceRef="Activity_0wyn7fl" targetRef="Activity_1unisom" />
+    <bpmn:sequenceFlow id="Flow_1muxp12" sourceRef="Activity_1unisom" targetRef="Event_0yz9ns6" />
+  </bpmn:process>
+  <bpmn:process id="generate_handling_vacios" name="Generar maniobra de vacios" isExecutable="true">
+    <bpmn:startEvent id="Event_1wciost" name="Nueva solicitud de maniobra">
+      <bpmn:outgoing>Flow_1e3nz6n</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0kemqfn" />
+    </bpmn:startEvent>
+    <bpmn:sendTask id="Activity_02slat0" name="Envia maniobra de vacios">
+      <bpmn:incoming>Flow_1y7ln33</bpmn:incoming>
+    </bpmn:sendTask>
+    <bpmn:sequenceFlow id="Flow_1ghqz3v" sourceRef="Activity_0rmi1wu" targetRef="Activity_11vlcln" />
+    <bpmn:sequenceFlow id="Flow_1e3nz6n" sourceRef="Event_1wciost" targetRef="Activity_0rmi1wu" />
+    <bpmn:sequenceFlow id="Flow_1y7ln33" sourceRef="Activity_11vlcln" targetRef="Activity_02slat0" />
+    <bpmn:userTask id="Activity_0rmi1wu" name="Aprobar solicitud de maniobra">
+      <bpmn:incoming>Flow_1e3nz6n</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ghqz3v</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_11vlcln" name="Generar maniobra de vacío">
+      <bpmn:incoming>Flow_1ghqz3v</bpmn:incoming>
+      <bpmn:outgoing>Flow_1y7ln33</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_00z4xj7">
+      <bpmndi:BPMNShape id="Participant_10vlkaf_di" bpmnElement="Participant_10vlkaf" isHorizontal="true">
+        <dc:Bounds x="150" y="360" width="1190" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1tjvzrb_di" bpmnElement="Flow_1tjvzrb">
+        <di:waypoint x="755" y="470" />
+        <di:waypoint x="840" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="793" y="452" width="10" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1bpactu_di" bpmnElement="Flow_1bpactu">
+        <di:waypoint x="640" y="470" />
+        <di:waypoint x="705" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hts2jx_di" bpmnElement="Flow_1hts2jx">
+        <di:waypoint x="730" y="495" />
+        <di:waypoint x="730" y="550" />
+        <di:waypoint x="430" y="550" />
+        <di:waypoint x="430" y="510" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="573" y="532" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0h15tf1_di" bpmnElement="Flow_0h15tf1">
+        <di:waypoint x="480" y="470" />
+        <di:waypoint x="540" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gz65gh_di" bpmnElement="Flow_1gz65gh">
+        <di:waypoint x="278" y="470" />
+        <di:waypoint x="380" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0dbfkes_di" bpmnElement="Flow_0dbfkes">
+        <di:waypoint x="940" y="470" />
+        <di:waypoint x="1030" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1muxp12_di" bpmnElement="Flow_1muxp12">
+        <di:waypoint x="1130" y="470" />
+        <di:waypoint x="1212" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_0yqsrlx_di" bpmnElement="Activity_0wyn7fl">
+        <dc:Bounds x="840" y="430" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1yj26ho_di" bpmnElement="Gateway_1yj26ho" isMarkerVisible="true">
+        <dc:Bounds x="705" y="445" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="694" y="421" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1hs2h1k_di" bpmnElement="Activity_0i99i0u">
+        <dc:Bounds x="380" y="430" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="242" y="452" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="216" y="495" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1h0vkxn_di" bpmnElement="Activity_1qkwntv">
+        <dc:Bounds x="540" y="430" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0fgq2ek_di" bpmnElement="Activity_1unisom">
+        <dc:Bounds x="1030" y="430" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0yz9ns6_di" bpmnElement="Event_0yz9ns6">
+        <dc:Bounds x="1212" y="452" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1189" y="495" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_0e9if40_di" bpmnElement="Participant_0e9if40" isHorizontal="true">
+        <dc:Bounds x="150" y="80" width="1190" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ghqz3v_di" bpmnElement="Flow_1ghqz3v">
+        <di:waypoint x="650" y="200" />
+        <di:waypoint x="780" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1e3nz6n_di" bpmnElement="Flow_1e3nz6n">
+        <di:waypoint x="448" y="200" />
+        <di:waypoint x="550" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1y7ln33_di" bpmnElement="Flow_1y7ln33">
+        <di:waypoint x="880" y="200" />
+        <di:waypoint x="1010" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_053sd6x_di" bpmnElement="Event_1wciost">
+        <dc:Bounds x="412" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="393" y="152" width="75" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0g1yq7l_di" bpmnElement="Activity_02slat0">
+        <dc:Bounds x="1010" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1t3fund_di" bpmnElement="Activity_0rmi1wu">
+        <dc:Bounds x="550" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_01ln28v_di" bpmnElement="Activity_11vlcln">
+        <dc:Bounds x="780" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1y9681a_di" bpmnElement="Flow_1y9681a">
+        <di:waypoint x="890" y="430" />
+        <di:waypoint x="890" y="300" />
+        <di:waypoint x="430" y="300" />
+        <di:waypoint x="430" y="218" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15zgwnz_di" bpmnElement="Flow_15zgwnz">
+        <di:waypoint x="1060" y="240" />
+        <di:waypoint x="1060" y="430" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
